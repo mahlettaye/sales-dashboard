@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import random
 import sys
-print(sys.path)
+
 
 
 class DataProcessor:
@@ -68,7 +68,7 @@ class DataProcessor:
 
         return df
     
-    def  change_date(df1,df2):
+    def  change_date(self,df):
         """
         The Function accepts set of datafrme and aimes to process date column.
         Convert object type to datatime.
@@ -86,16 +86,47 @@ class DataProcessor:
         """
 
 
-        for df in (df1, df2):
-            df['Date'] = df['Date'].astype('datetime64[ns]')
-            df['Month'] = df.Date.dt.month
-            df['Day'] = df.Date.dt.day
-            df['Year'] = df.Date.dt.year.astype(str)+ '-01-01'
-            df['Week']= (((df['Date'] - df['Year'].astype('datetime64[ns]')).dt.days)/7).astype('int16') +1
-            df['Week']=  df.Week.where(df['Week']!=53, 52)
-            df['Year'] = df.Date.dt.year
+        
+        df['Date'] = df['Date'].astype('datetime64[ns]')
+        df['Month'] = df.Date.dt.month
+        df['Day'] = df.Date.dt.day
+        df['Year'] = df.Date.dt.year.astype(str)+ '-01-01'
+        df['Week']= (((df['Date'] - df['Year'].astype('datetime64[ns]')).dt.days)/7).astype('int16') +1
+        df['Week']=  df.Week.where(df['Week']!=53, 52)
+        df['Year'] = df.Date.dt.year
 
-        return df1,df2
+        return df
+     
+    def  change_stateHoliday(self,df):
+        """
+            The Function accepts  datafrme and aimes to process state holiday column.
+            Convert object type to integer type.
+            For state holiday values:
+            '0' = 0
+            'a' = 1
+            'b' = 2
+            'c' = 3
+            
+
+            
+            Parameters
+            ----------
+            df: pd.Dataframe :
+            
+
+            Returns
+            -------
+            df: pd.Dataframe :
+
+        """
+
+        df['StateHoliday'] = df['StateHoliday'].replace(['0'],0)
+        df['StateHoliday'] = df['StateHoliday'].replace(['a'],1)
+        df['StateHoliday'] = df['StateHoliday'].replace(['b'],2)
+        df['StateHoliday'] = df['StateHoliday'].replace(['c'],3)
+
+
+        return df
     
     def drop_cols(gdf):
         """
@@ -161,17 +192,21 @@ class DataProcessor:
         df["CompetitionDistance"].fillna(lambda x: random.choice(df[df["CompetitionDistance"] != np.nan]["CompetitionDistance"]), inplace =True)
         
         return df
-    def data_to_send (slef):
-        data = slef.read_csv("../training.csv")
-        processed_data = slef.handdle_missing_values(data)
+    def data_to_send (self):
+        data = self.read_csv("/home/mahlet/sales-dashboard/data/train.csv")
+        processed_data = self.change_date(data)
+        processed_data = self.change_stateHoliday(processed_data)
+       
         
-        print  (processed_data.head())
+        #print  (processed_data.head())
+        #print (processed_data.dtypes)
+        #print  (data['StateHoliday'].unique())
         return processed_data
 
     
 
 if __name__=="__main__":
     processor=DataProcessor()
-    processor.data_to_send()
+    #processor.data_to_send()
     #print(train_data.head())
     #processor.identify_unique_value(train_data)
