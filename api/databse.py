@@ -33,8 +33,9 @@ class DatabaseHandelr:
             cursor.execute("CREATE DATABASE IF NOT EXISTS Rossmann")
         except Exception as e:
             print("Unable to create Database"+e)
-            pass
+            
 
 if __name__ == "__main__":
     dbobj = DatabaseHandelr()
-    dbobj.db_connect()
+    conn = dbobj.db_connect()
+    dbobj.create_database(conn)
