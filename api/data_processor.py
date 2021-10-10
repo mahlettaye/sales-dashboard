@@ -162,7 +162,7 @@ class DataProcessor:
         
         return df
     def data_to_send (slef):
-        data = slef.read_csv("/home/mahlet/sales-dashboard/data/training.csv")
+        data = slef.read_csv("../training.csv")
         processed_data = slef.handdle_missing_values(data)
         
         print  (processed_data.head())
