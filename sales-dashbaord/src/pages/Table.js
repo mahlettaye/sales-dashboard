@@ -1,86 +1,110 @@
-import React,{useState, useEffect, useTheme} from 'react';
-import Link from '@mui/material/Link';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import React, { useEffect, useState } from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Brush,
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+} from 'recharts';
+import { useTheme } from '@mui/material/styles';
+
+
 import Title from './Title';
-import axios from 'axios';
 
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-  return { id, date, name, shipTo, paymentMethod, amount };
+
+class LTable extends React.Component {
+   state = {
+     contacts: []
+   };
+   render() {
+     return (
+       <Contacts contacts={this.state.contacts} />
+   )
+   }
+   componentDidMount() {
+     fetch('http://localhost:5000/')
+     .then(res => res.json())
+     .then(data => {
+     this.setState({ contacts: data });
+   })
+   .catch(console.log);
 }
-
-const rows = [
-  createData(
-    0,
-    '16 Mar, 2019',
-    'Elvis Presley',
-    'Tupelo, MS',
-    'VISA ⠀•••• 3719',
-    312.44,
-  ),
-  createData(
-    1,
-    '16 Mar, 2019',
-    'Paul McCartney',
-    'London, UK',
-    'VISA ⠀•••• 2574',
-    866.99,
-  ),
-  createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  createData(
-    3,
-    '16 Mar, 2019',
-    'Michael Jackson',
-    'Gary, IN',
-    'AMEX ⠀•••• 2000',
-    654.39,
-  ),
-  createData(
-    4,
-    '15 Mar, 2019',
-    'Bruce Springsteen',
-    'Long Branch, NJ',
-    'VISA ⠀•••• 5919',
-    212.79,
-  ),
-];
-
-function preventDefault(event) {
-  event.preventDefault();
-}
-
-export default function Tables() {
-  const [initialdata, setinitialdata]=useState([{}])
-  // useEffect(() => {
-  //   axios.get('http://localhost:5000/').then(response =>response.json()).then (response=>console.log(response)) 
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-    
-  // //fetch('/api').then(response =>response.json()).then(data => console.log(data))
-  
- 
-  // }, []);
-  // useEffect(() => {
-  //   fetch('/').then(res => res.json()).then(data => {
-  //     setinitialdata(data.time);
-  //   });
-  // }, []);
-
-  
-  
- 
-  return (
-    <div className="App">
-    
-     
-
-      <p>The current time is .</p>
- 
-  </div>
+ }
+ const Contacts = ({ contacts }) => {
+   const theme = useTheme();
+   function preventDefault(event) {
+      event.preventDefault();
+    }
+ const newData = contacts.reduce(
+      (acc, el) => {
+          acc[el['Month']] = (acc[el['Month']] || 0) + 1;
+          return acc;
+      },
+      {}
   );
-}
+  const codes = Object.entries(newData)
+    .map(([key, value]) => {
+        return {StateHoliday: key, count: value};
+    });
+    const renderLabel = (prop, dataKey) => {
+      const index = prop.index;
+      const target = codes[index];
+      const highlights = target.highlights || [];
+    
+      if (highlights.length > 0) {
+        for (let i = 0; i < highlights.length; i++) {
+          if (highlights[i].key === dataKey) {
+            return highlights[i].marker;
+          }
+        }
+      }
+    };
+    
+   return (
+   <div>
+       <React.Fragment>
+      <Title>Today</Title>        
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart
+            width={500}
+            height={200}
+            data={contacts}
+            syncId="anyId"
+            margin={{
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="Month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="Sales" stroke="#82ca9d" fill="#82ca9d" />
+            <Brush />
+          </LineChart>
+        </ResponsiveContainer>
+
+        
+    </React.Fragment>
+       
+       
+       
+       
+       
+       
+
+       
+       
+   </div>
+   )
+};
+export default LTable

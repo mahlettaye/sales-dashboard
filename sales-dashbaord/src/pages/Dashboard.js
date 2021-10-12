@@ -13,7 +13,8 @@ import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import Chart from "./chart";
 
-import Tables from "./Table";
+import LTable from "./Table";
+import Bar from "./Bar";
 //import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 //import { mainListItems, secondaryListItems } from "./listItems";
@@ -71,7 +72,7 @@ function DashboardContent() {
                   height: 240
                 }}
               >
-                {/* <Tables /> */}
+                <LTable />
               </Paper>
             </Grid>
             {/* Recent Deposits */}
@@ -84,15 +85,17 @@ function DashboardContent() {
                   height: 240
                 }}
               >
-                {/* <Chart /> */}
-                
+               
+                <Bar/>
               </Paper>
             </Grid>
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper
                 sx={{ p: 2, display: "flex", flexDirection: "column" }}
-              ></Paper>
+              >
+                 <Chart />
+              </Paper>
             </Grid>
           </Grid>
           <Copyright sx={{ pt: 4 }} />
