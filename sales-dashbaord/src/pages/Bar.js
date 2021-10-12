@@ -59,7 +59,7 @@ class Bar extends React.Component {
    
    <div>
        <React.Fragment>
-      <Title>Today</Title>
+      <Title>Sales Count per StateHoliday</Title>
       
         
         <ResponsiveContainer width="100%" height={200}>

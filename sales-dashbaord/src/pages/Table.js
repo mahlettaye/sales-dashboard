@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Brush,
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-} from 'recharts';
+import React from 'react';
+
 import { useTheme } from '@mui/material/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
-
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TablePagination from "@material-ui/core/TablePagination";
 import Title from './Title';
 
 
@@ -38,63 +32,76 @@ class LTable extends React.Component {
  }
  const Contacts = ({ contacts }) => {
    const theme = useTheme();
-   function preventDefault(event) {
-      event.preventDefault();
+   const useStyles = makeStyles({
+    table: {
+      minWidth: 650
     }
- const newData = contacts.reduce(
-      (acc, el) => {
-          acc[el['Month']] = (acc[el['Month']] || 0) + 1;
-          return acc;
-      },
-      {}
-  );
-  const codes = Object.entries(newData)
-    .map(([key, value]) => {
-        return {StateHoliday: key, count: value};
-    });
-    const renderLabel = (prop, dataKey) => {
-      const index = prop.index;
-      const target = codes[index];
-      const highlights = target.highlights || [];
+  });
+   
     
-      if (highlights.length > 0) {
-        for (let i = 0; i < highlights.length; i++) {
-          if (highlights[i].key === dataKey) {
-            return highlights[i].marker;
-          }
-        }
-      }
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
     };
+
+    const handleChangeRowsPerPage = event => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
+    const emptyRows =
+      rowsPerPage - Math.min(rowsPerPage, contacts.length - page * rowsPerPage);
     
    return (
    <div>
        <React.Fragment>
-      <Title>Today</Title>        
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart
-            width={500}
-            height={200}
-            data={contacts}
-            syncId="anyId"
-            margin={{
-              top: 10,
-              right: 30,
-              left: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="Month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="Sales" stroke="#82ca9d" fill="#82ca9d" />
-            <Brush />
-          </LineChart>
-        </ResponsiveContainer>
+       <Title>Sales Data</Title>
+       <Table size="small">
+         <TableHead>
+           <TableRow>
+             <TableCell>Store</TableCell>
+             <TableCell>Date</TableCell>
+             <TableCell>Consumers</TableCell>
+             <TableCell>StateHoliday</TableCell>
+             <TableCell>SchoolHoliday</TableCell>
+             
+             <TableCell align="right">Sale Amount</TableCell>
+           </TableRow>
+         </TableHead>
+         
+         <TableBody>
+           {contacts.slice(page* rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => (
+             <TableRow key={row.SalesID}>
 
-        
-    </React.Fragment>
+               <TableCell >{row.Store}</TableCell>
+               <TableCell >{row.Date}</TableCell>
+               <TableCell >{row.Customers}</TableCell>
+               <TableCell >{row.StateHoliday}</TableCell>
+               <TableCell >{row.SchoolHoliday}</TableCell>
+             
+               
+               <TableCell align="right">{`$${row.Sales}`}</TableCell>
+             </TableRow>
+           ))}
+           {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
+         </TableBody>
+         
+       </Table>
+       <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={contacts.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+       
+     </React.Fragment>
        
        
        
